@@ -5,8 +5,8 @@ global:
 
 scrape_configs:
   - job_name: labbot
-    static_configs: [targets: [labbot:9900]]
+    static_configs: [targets: [{{ bot_container.name }}:9900]]
   - job_name: cadvisor
-    static_configs: [targets: [cadvisor:8080]]
+    static_configs: [targets: [{{ cadvisor_container.name }}:8080]]
   - job_name: node_exporter
-    static_configs: [targets: [node-exporter:9100]]
+    static_configs: [targets: [{{ node_exporter_container.name }}:9100]]

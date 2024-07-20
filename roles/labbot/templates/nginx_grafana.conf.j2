@@ -57,7 +57,7 @@ server {
     client_max_body_size 50m;
 
     location / {
-        proxy_pass http://grafana:3000;
+        proxy_pass http://{{ grafana_container.name }}:3000;
     }
 {% endif %}
 }

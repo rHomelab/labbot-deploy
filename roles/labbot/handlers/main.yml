@@ -2,7 +2,7 @@
 
 - name: Restart Grafana
   community.docker.docker_container:
-    name: grafana
+    name: "{{ grafana_container.name }}"
     restart: true
     state: started
     comparisons:
@@ -10,7 +10,7 @@
 
 - name: Restart labbot
   community.docker.docker_container:
-    name: labbot
+    name: "{{ bot_container.name }}"
     restart: true
     state: started
     comparisons:
@@ -18,7 +18,7 @@
 
 - name: Restart Prometheus
   community.docker.docker_container:
-    name: prometheus
+    name: "{{ prometheus_container.name }}"
     restart: true
     state: started
     comparisons:
@@ -26,7 +26,7 @@
 
 - name: Reload nginx
   community.docker.docker_container_exec:
-    container: nginx
+    container: "{{ nginx_container.container.Name | replace('/', '') }}"
     command: nginx -s reload
 
 - name: Prune Docker images

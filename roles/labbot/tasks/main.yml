@@ -1,9 +1,11 @@
 ---
 
-- name: Set facts
+- name: Set container facts # noqa var-naming[no-jinja]
   ansible.builtin.set_fact:
-    bot_container: >-
-      {{ labbot_containers | selectattr('image', 'search', 'red-discordbot') | first }}
+    "{{ item.name | replace(labbot_container_name_prefix, '') }}_container": "{{ item }}"
+  loop: "{{ labbot_containers }}"
+  loop_control:
+    label: "{{ item.name }}"
   tags: always
 
 - name: Provision configs

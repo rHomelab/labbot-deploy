@@ -7,7 +7,7 @@ datasources:
     access: proxy
     orgId: 1
     uid: prometheus
-    url: http://prometheus:9090
+    url: http://{{ prometheus_container.name }}:9090
     isDefault: true
     basicAuth: true
     basicAuthUser: admin

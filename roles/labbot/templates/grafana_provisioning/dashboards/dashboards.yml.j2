@@ -1,5 +1,5 @@
-{% set dashboards_path = (labbot_containers | selectattr('image', 'search', 'grafana/grafana') | map(attribute='volumes') |
-  flatten | select('match', '^(?!.*provisioning).*dashboards.*') | map('split', ':') | flatten)[1] %}
+{% set dashboards_path = (grafana_container.volumes | select('match', '^(?!.*provisioning).*dashboards.*')
+                          | map('split', ':') | flatten)[1] %}
 ---
 apiVersion: 1
 
