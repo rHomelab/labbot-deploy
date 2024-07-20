@@ -14,6 +14,10 @@
     {
       "matchPackageNames": ["prom/prometheus"],
       "customChangelogUrl": "https://github.com/prometheus/prometheus"
+    },
+    {
+      "matchPackageNames": ["quay.io/prometheus/node-exporter"],
+      "customChangelogUrl": "https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md"
     }
   ]
 }
