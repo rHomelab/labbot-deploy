@@ -126,27 +126,21 @@ labbot_nginx_dhparam_path_host: "{{ labbot_certbot_cert_bind | split(':') | firs
 
 labbot_nginx_conf_path_host: "{{ labbot_app_base_dir }}/nginx/conf"
 
-labbot_nginx_containers:
-  - name: nginx
-    image: nginx:1.27-alpine
-    ports: [80:80, 443:443]
-    volumes:
-      - "{{ labbot_nginx_conf_path_host }}:/etc/nginx/conf.d:ro"
-      - "{{ labbot_certbot_www_bind }}:ro"
-      - "{{ labbot_certbot_cert_bind }}:ro"
-    networks: [name: web]
-
-  - name: certbot
-    image: certbot/certbot:latest
-    restart_policy: "no"
-    command: >-
-      certonly --non-interactive --agree-tos
-      --webroot --webroot-path {{ labbot_certbot_webroot_path }}/
-      -m {{ labbot_certbot_letsencrypt_email }}
-      -d {{ labbot_grafana_domain }}{{
-      ' --dry-run' if labbot_certbot_dry_run else '' }}
-    volumes:
-      - "{{ labbot_certbot_www_bind }}"
-      - "{{ labbot_certbot_cert_bind }}"
-      - "{{ labbot_app_base_dir }}/nginx/certbot_logs:/var/log/letsencrypt"
-    state: present
+labbot_certbot_container:
+  name: certbot
+  image: certbot/certbot:latest
+  restart_policy: "no"
+  command: >-
+    certonly --non-interactive --agree-tos
+    --webroot --webroot-path {{ labbot_certbot_webroot_path }}/
+    -m {{ labbot_certbot_letsencrypt_email }}
+    -d {{ labbot_grafana_domain }}{{
+    ' --dry-run' if labbot_certbot_dry_run else '' }}
+  volumes:
+    - "{{ labbot_certbot_www_bind }}"
+    - "{{ labbot_certbot_cert_bind }}"
+    - "{{ labbot_app_base_dir }}/nginx/certbot_logs:/var/log/letsencrypt"
+  detach: false
+  output_logs: true
+  cleanup: true
+  state: started
