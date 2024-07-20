@@ -5,5 +5,15 @@
   ],
   "ansible": {
     "fileMatch": ["(^|/)(tasks|vars|defaults)/[^/]+\\.ya?ml$"]
-  }
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["ghcr.io/rhomelab/red-discordbot"],
+      "customChangelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot"
+    },
+    {
+      "matchPackageNames": ["prom/prometheus"],
+      "customChangelogUrl": "https://github.com/prometheus/prometheus"
+    }
+  ]
 }
