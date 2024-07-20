@@ -7,6 +7,9 @@
 # Parent directory for container config paths
 labbot_app_base_dir: /opt
 
+# Prefix for all container names
+labbot_container_name_prefix: labbot_
+
 # Discord bot token for LabBot
 # labbot_discord_token:
 

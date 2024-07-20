@@ -1,7 +1,7 @@
 ---
 
 labbot_containers:
-  - name: labbot
+  - name: "{{ labbot_container_name_prefix }}bot"
     image: ghcr.io/rhomelab/red-discordbot:3.5.9
     env:
       INSTANCE_NAME: LabBot
@@ -17,7 +17,7 @@ labbot_containers:
     memory: 2G
     memory_swap: 2500M
 
-  - name: prometheus
+  - name: "{{ labbot_container_name_prefix }}prometheus"
     image: prom/prometheus:v2.53.0
     user: "{{ labbot_prometheus_container_user }}"
     command:
@@ -35,7 +35,7 @@ labbot_containers:
       - name: monitoring
     ports: "{{ ['9090:9090'] if labbot_prometheus_open_port else [] }}"
 
-  - name: cadvisor
+  - name: "{{ labbot_container_name_prefix }}cadvisor"
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     privileged: true
     volumes:
@@ -49,7 +49,7 @@ labbot_containers:
     networks: [name: monitoring]
     ports: "{{ ['8080:8080'] if labbot_cadvisor_open_port else [] }}"
 
-  - name: node-exporter
+  - name: "{{ labbot_container_name_prefix }}node_exporter"
     image: quay.io/prometheus/node-exporter:v1.8.1
     command:
       - --path.rootfs=/host
@@ -88,7 +88,7 @@ labbot_containers:
       - /:/host:ro,rslave
     networks: [name: monitoring]
 
-  - name: grafana
+  - name: "{{ labbot_container_name_prefix }}grafana"
     image: grafana/grafana:11.1.0
     user: "{{ labbot_grafana_container_user }}"
     ports: [3000:3000]
@@ -127,7 +127,7 @@ labbot_nginx_dhparam_path_host: "{{ labbot_certbot_cert_bind | split(':') | firs
 labbot_nginx_conf_path_host: "{{ labbot_app_base_dir }}/nginx/conf"
 
 labbot_certbot_container:
-  name: certbot
+  name: "{{ labbot_container_name_prefix }}certbot"
   image: certbot/certbot:latest
   restart_policy: "no"
   command: >-
