@@ -1,0 +1,4 @@
+.dependencies
+venv
+plugins/
+host_vars/labbot_host.yml

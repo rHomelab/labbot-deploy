@@ -1,0 +1,5 @@
+---
+
+roles:
+  - name: stefangweichinger.ansible_rclone
+    version: 0.1.6

@@ -1,0 +1,36 @@
+---
+
+- name: Restart Grafana
+  community.docker.docker_container:
+    name: grafana
+    restart: true
+    state: started
+    comparisons:
+      '*': ignore
+
+- name: Restart labbot
+  community.docker.docker_container:
+    name: labbot
+    restart: true
+    state: started
+    comparisons:
+      '*': ignore
+
+- name: Restart Prometheus
+  community.docker.docker_container:
+    name: prometheus
+    restart: true
+    state: started
+    comparisons:
+      '*': ignore
+
+- name: Reload nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload
+
+- name: Prune Docker images
+  community.docker.docker_prune:
+    images: true
+    images_filters:
+      dangling: false

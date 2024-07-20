@@ -1,0 +1,151 @@
+---
+
+labbot_containers:
+  - name: labbot
+    image: ghcr.io/rhomelab/red-discordbot:3.5.9
+    env:
+      INSTANCE_NAME: LabBot
+      PREFIX: '^'
+      TOKEN: "{{ labbot_discord_token }}"
+      TEAM_MEMBERS_ARE_OWNERS: 'true'
+    # Useful if a cog is fatally breaking the bot.
+    # See other params here: https://github.com/rHomelab/Red-DiscordBot-Docker/blob/main/.github/redbot-arguments.txt
+    # command: '--no-cogs --load-cogs downloader'
+    command: '--message-cache-size 2000' # Default 1000
+    volumes: ["{{ labbot_app_base_dir }}/labbot:/redbot/data"]
+    networks: [name: bots]
+    memory: 2G
+    memory_swap: 2500M
+
+  - name: prometheus
+    image: prom/prometheus:v2.53.0
+    user: "{{ labbot_prometheus_container_user }}"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.config.file=/etc/prometheus/web.yml
+      - --storage.tsdb.retention.time=5y
+      - --storage.tsdb.wal-compression
+    volumes:
+      - "{{ labbot_app_base_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "{{ labbot_app_base_dir }}/prometheus/web.yml:/etc/prometheus/web.yml:ro"
+      - "{{ labbot_app_base_dir }}/prometheus/data:/prometheus/data"
+    networks:
+      - name: web
+      - name: bots
+      - name: monitoring
+    ports: "{{ ['9090:9090'] if labbot_prometheus_open_port else [] }}"
+
+  - name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    networks: [name: monitoring]
+    ports: "{{ ['8080:8080'] if labbot_cadvisor_open_port else [] }}"
+
+  - name: node-exporter
+    image: quay.io/prometheus/node-exporter:v1.8.1
+    command:
+      - --path.rootfs=/host
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
+      - --no-collector.arp
+      - --no-collector.bcache
+      - --no-collector.bonding
+      - --no-collector.btrfs
+      - --no-collector.conntrack
+      - --no-collector.dmi
+      - --no-collector.edac
+      - --no-collector.entropy
+      - --no-collector.fibrechannel
+      - --no-collector.filefd
+      - --no-collector.hwmon
+      - --no-collector.infiniband
+      - --no-collector.ipvs
+      - --no-collector.mdadm
+      - --no-collector.nfs
+      - --no-collector.nfsd
+      - --no-collector.powersupplyclass
+      - --no-collector.pressure
+      - --no-collector.rapl
+      - --no-collector.schedstat
+      - --no-collector.sockstat
+      - --no-collector.softnet
+      - --no-collector.tapestats
+      - --no-collector.thermal_zone
+      - --no-collector.time
+      - --no-collector.timex
+      - --no-collector.udp_queues
+      - --no-collector.xfs
+      - --no-collector.zfs
+    pid_mode: host
+    volumes:
+      - /:/host:ro,rslave
+    networks: [name: monitoring]
+
+  - name: grafana
+    image: grafana/grafana:11.1.0
+    user: "{{ labbot_grafana_container_user }}"
+    ports: [3000:3000]
+    env:
+      TZ: Europe/London
+      GF_ANALYTICS_REPORTING_ENABLED: 'false'
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DEFAULT_INSTANCE_NAME: LabBot
+      GF_LOG_MODE: console
+      GF_SECURITY_ADMIN_USER: "{{ labbot_grafana_username }}"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ labbot_grafana_password }}"
+      GF_SECURITY_DISABLE_GRAVATAR: 'true'
+      GF_SERVER_ENABLE_GZIP: 'true'
+    volumes:
+      - "{{ labbot_app_base_dir }}/grafana/data:/var/lib/grafana"
+      - "{{ labbot_app_base_dir }}/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro"
+      - "{{ labbot_app_base_dir }}/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro"
+      - "{{ labbot_app_base_dir }}/grafana/provisioning/alerting:/etc/grafana/provisioning/alerting:ro"
+      - "{{ labbot_app_base_dir }}/grafana/dashboards:/mnt/dashboards"
+      - "{{ labbot_app_base_dir }}/grafana/home_dashboard.json:/usr/share/grafana/public/dashboards/home.json:ro"
+      - "{{ labbot_app_base_dir }}/grafana/labbot-fav32.png:/usr/share/grafana/public/img/fav32.png:ro"
+      - "{{ labbot_app_base_dir }}/grafana/labbot-fav32.png:/usr/share/grafana/public/img/apple-touch-icon.png:ro"
+    networks: [name: web]
+
+
+labbot_certbot_webroot_path: /var/www/certbot
+labbot_certbot_cert_path: /etc/letsencrypt
+
+labbot_certbot_www_bind: "{{ labbot_app_base_dir }}/nginx/certbot_www:{{ labbot_certbot_webroot_path }}"
+labbot_certbot_cert_bind: "{{ labbot_app_base_dir }}/nginx/certbot_certs:{{ labbot_certbot_cert_path }}"
+
+labbot_nginx_dhparam_path_host: "{{ labbot_certbot_cert_bind | split(':') | first }}/dhparam.pem"
+
+labbot_nginx_conf_path_host: "{{ labbot_app_base_dir }}/nginx/conf"
+
+labbot_nginx_containers:
+  - name: nginx
+    image: nginx:1.27-alpine
+    ports: [80:80, 443:443]
+    volumes:
+      - "{{ labbot_nginx_conf_path_host }}:/etc/nginx/conf.d:ro"
+      - "{{ labbot_certbot_www_bind }}:ro"
+      - "{{ labbot_certbot_cert_bind }}:ro"
+    networks: [name: web]
+
+  - name: certbot
+    image: certbot/certbot:latest
+    restart_policy: "no"
+    command: >-
+      certonly --non-interactive --agree-tos
+      --webroot --webroot-path {{ labbot_certbot_webroot_path }}/
+      -m {{ labbot_certbot_letsencrypt_email }}
+      -d {{ labbot_grafana_domain }}{{
+      ' --dry-run' if labbot_certbot_dry_run else '' }}
+    volumes:
+      - "{{ labbot_certbot_www_bind }}"
+      - "{{ labbot_certbot_cert_bind }}"
+      - "{{ labbot_app_base_dir }}/nginx/certbot_logs:/var/log/letsencrypt"
+    state: present

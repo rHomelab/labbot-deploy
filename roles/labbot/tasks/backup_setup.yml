@@ -1,0 +1,41 @@
+---
+
+- name: Include rclone vars
+  ansible.builtin.include_vars:
+    file: rclone.yml
+
+# Install Rclone and configure remote(s)
+- name: Install & configure Rclone
+  ansible.builtin.include_role:
+    name: stefangweichinger.ansible_rclone
+    apply:
+      tags: rclone
+  tags: rclone
+
+- name: Install jq
+  ansible.builtin.apt:
+    name: jq
+    state: present
+
+- name: Template bot backup script
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: "{{ labbot_app_base_dir }}/backup-labbot.sh"
+    mode: '0755'
+  vars:
+    bot_dir: "{{ (bot_container.volumes[0] | split(':'))[0] }}"
+    container_name: "{{ bot_container.name }}"
+    webhook: "{{ labbot_backup_report_webhook }}"
+
+- name: Install cron
+  ansible.builtin.apt:
+    name: cron
+    state: present
+
+- name: Install cron backup schedules
+  ansible.builtin.cron:
+    name: labbot backup schedule
+    cron_file: labbot_backup
+    user: root
+    special_time: daily
+    job: "{{ labbot_app_base_dir }}/backup-labbot.sh"

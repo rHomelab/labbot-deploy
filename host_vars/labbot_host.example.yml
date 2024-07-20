@@ -1,0 +1,26 @@
+#################################### NOTE ####################################
+# The settings in this file are the minimum required to run the playbook.
+# For more advanced configurations, please see roles/labbot/defaults/main.yml
+##############################################################################
+
+# Connection settings
+ansible_host: # ip or host.name
+ansible_user: # username
+ansible_password: # password
+# OR
+ansible_ssh_private_key_file: # path to private key
+
+# Bot and monitoring settings
+labbot_discord_token: '!CHANGE_ME!'
+
+labbot_grafana_domain: labbot.tiga.tech
+labbot_grafana_password: '!CHANGE_ME!'
+
+labbot_prometheus_users:
+  - username: admin
+    password: '!CHANGE_ME!'
+    # Hashed version of the password
+    # htpasswd -nBC 10 '<password>' | tr -d ':\n'
+    password_bcrypt: '<hash here>'
+
+labbot_certbot_letsencrypt_email: "admin@{{ labbot_grafana_domain }}"

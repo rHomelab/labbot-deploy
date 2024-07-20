@@ -1,0 +1,63 @@
+---
+
+- name: Set facts
+  ansible.builtin.set_fact:
+    grafana_app_dir: "{{ labbot_app_base_dir }}/grafana"
+    grafana_user: >-
+      {{ (labbot_containers | selectattr('image', 'search', 'grafana/grafana'))[0]['user'] }}
+    bot_container: >-
+      {{ labbot_containers | selectattr('image', 'search', 'red-discordbot') | first }}
+  tags: always
+
+- name: Provision configs
+  ansible.builtin.include_tasks:
+    file: app_configs.yml
+    apply:
+      tags: app_configs
+  tags: app_configs
+
+- name: Create Docker network
+  community.docker.docker_network:
+    name: "{{ item.name }}"
+    state: present
+  register: docker_network
+  loop: "{{ labbot_containers | selectattr('networks', 'defined') | map(attribute='networks') | default([]) | flatten | unique }}"
+
+- name: Deploy containers # noqa args[module]
+  community.docker.docker_container: "{{ item }}"
+  loop: "{{ labbot_containers }}"
+  loop_control:
+    label: "{{ item.name }}"
+  notify: Prune Docker images
+
+- name: Deploy reverse proxy for Grafana
+  ansible.builtin.include_tasks:
+    file: proxy_setup.yml
+    apply:
+      tags: proxy
+  tags: proxy
+
+- name: Configure backups
+  ansible.builtin.include_tasks:
+    file: backup_setup.yml
+    apply:
+      tags: backup
+  tags: backup
+  when: labbot_enable_bot_backup
+
+- name: Install SSH keys
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ item.key }}"
+    exclusive: false
+    comment: "{{ item.comment if item.comment is defined else omit }}"
+  loop: "{{ labbot_ssh_keys }}"
+
+# Hacky workaround to occasional memory leaks in Red-DiscordBot
+- name: Create bot restart cron entries
+  ansible.builtin.cron:
+    name: "{{ bot_container.name }} restart schedule"
+    cron_file: redbot_restart
+    user: root
+    special_time: monthly
+    job: docker restart {{ bot_container.name }}

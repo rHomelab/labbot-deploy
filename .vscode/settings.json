@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.yml": "ansible",
+    "*.yaml": "ansible",
+    "*.j2": "ansible-jinja",
+  },
+  "ansible.python.activationScript": "venv/bin/activate",
+}

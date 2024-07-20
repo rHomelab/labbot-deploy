@@ -1,0 +1,12 @@
+global:
+  scrape_interval: {{ labbot_prometheus_scrape_interval }}s # How frequently to scrape targets.
+  evaluation_interval: 15s # How frequently to evaluate rules.
+  scrape_timeout: {{ labbot_prometheus_scrape_interval }}s # How long until a scrape request times out.
+
+scrape_configs:
+  - job_name: labbot
+    static_configs: [targets: [labbot:9900]]
+  - job_name: cadvisor
+    static_configs: [targets: [cadvisor:8080]]
+  - job_name: node_exporter
+    static_configs: [targets: [node-exporter:9100]]

@@ -1,0 +1,4 @@
+basic_auth_users:
+{% for user in labbot_prometheus_users %}
+    {{ user.username }}: {{ user.password_bcrypt }}
+{% endfor %}

@@ -1,0 +1,83 @@
+---
+
+- name: Create Grafana directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_user }}"
+    mode: '0755'
+    state: directory
+  loop: "{{ labbot_containers | selectattr('name', '==', 'grafana') | map(attribute='volumes') | flatten | map('split', ':') | map('first') }}"
+  when: not item is match('.*\.\w{2,4}$')
+
+- name: Create Prometheus directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ labbot_prometheus_container_user }}"
+    group: "{{ labbot_prometheus_container_user }}"
+    mode: '0755'
+    state: directory
+  loop: "{{ labbot_containers | selectattr('name', '==', 'prometheus') | map(attribute='volumes') | flatten | map('split', ':') | map('first') }}"
+  when: not item is match('.*\.\w{2,4}$')
+
+- name: Template Prometheus configs
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ labbot_app_base_dir }}/prometheus/{{ item.dest }}"
+    mode: '0440'
+    owner: "{{ labbot_prometheus_container_user }}"
+    group: "{{ labbot_prometheus_container_user }}"
+  loop:
+    - src: prometheus.yml.j2
+      dest: prometheus.yml
+    - src: prometheus-web.yml.j2
+      dest: web.yml
+  notify: Restart Prometheus
+
+- name: Set LabBot prometheus_exporter cog scrape interval
+  ansible.builtin.replace:
+    path: "{{ labbot_app_base_dir }}/labbot/cogs/PromExporter/settings.json"
+    replace: '\1 {{ labbot_prometheus_scrape_interval }}'
+    regexp: '("poll_interval":)\s\d+(\.\d)?'
+    validate: jq type '%s'
+  ignore_errors: true # noqa ignore-errors
+  notify: Restart labbot
+
+- name: Template Grafana provisioning config
+  ansible.builtin.template:
+    src: "{{ item.root + item.path }}"
+    dest: "{{ grafana_app_dir }}/provisioning/{{ item.path | replace('.j2', '') }}"
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_user }}"
+    mode: '0440'
+  loop: >-
+    {{ lookup('filetree', 'templates/grafana_provisioning/') }}
+  loop_control:
+    label: "{{ item.path }}"
+  when: item.state == 'file'
+  notify: Restart Grafana
+
+# No need to notify the 'Restart Grafana' handler here since Grafana scans for updated
+# files per the `updateIntervalSeconds` setting in the `dashboards.yml` provisioning config.
+- name: Template Grafana dashboards
+  ansible.builtin.template:
+    src: "{{ item.root + item.path }}"
+    dest: "{{ grafana_app_dir }}/dashboards/{{ item.path | replace('.j2', '') }}"
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_user }}"
+    mode: '0440'
+  loop: >-
+    {{ lookup('filetree', 'templates/grafana_dashboards/') }}
+  loop_control:
+    label: "{{ item.path }}"
+  when: item.state == 'file'
+
+- name: Copy other Grafana files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ grafana_app_dir + '/' + item }}"
+    mode: '0644'
+  loop:
+    - labbot-fav32.png
+    - home_dashboard.json
+  notify: Restart Grafana

@@ -1,0 +1,15 @@
+{% set dashboards_path = (labbot_containers | selectattr('image', 'search', 'grafana/grafana') | map(attribute='volumes') |
+  flatten | select('match', '^(?!.*provisioning).*dashboards.*') | map('split', ':') | flatten)[1] %}
+---
+apiVersion: 1
+
+providers:
+  - name: dashboards
+    orgId: 1
+    type: file
+    disableDeletion: true
+    updateIntervalSeconds: 10
+    allowUiUpdates: false
+    options:
+      path: {{ dashboards_path }}
+      foldersFromFilesStructure: false

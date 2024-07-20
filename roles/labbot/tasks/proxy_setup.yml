@@ -1,0 +1,114 @@
+---
+
+- name: Get Cloudflare proxy IPs
+  ansible.builtin.uri:
+    url: "https://api.cloudflare.com/client/v4/ips"
+    method: GET
+    return_content: true
+    headers:
+      accept: application/json
+  check_mode: false
+  register: cloudflare_ips
+
+- name: Create NGINX dir
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0755'
+    owner: root
+    group: root
+    state: directory
+  loop:
+    - "{{ labbot_nginx_conf_path_host }}"
+    - "{{ labbot_nginx_dhparam_path_host | dirname }}"
+
+- name: Generate Diffie-Hellman parameters (dhparam)
+  community.crypto.openssl_dhparam:
+    path: "{{ labbot_nginx_dhparam_path_host }}"
+    mode: '0644'
+    owner: root
+    group: root
+    state: present
+
+- name: Check for certificate
+  ansible.builtin.stat:
+    path: "{{ labbot_certbot_cert_bind | split(':') | first }}/live/{{ labbot_grafana_domain }}/fullchain.pem"
+  register: stat_cert
+
+- name: Deploy NGINX container
+  community.docker.docker_container:
+    name: nginx
+    image: nginx:1.27-alpine
+    ports: [80:80, 443:443]
+    volumes:
+      - "{{ labbot_nginx_conf_path_host }}:/etc/nginx/conf.d:ro"
+      - "{{ labbot_certbot_www_bind }}:ro"
+      - "{{ labbot_certbot_cert_bind }}:ro"
+    networks: [name: web]
+  notify: Prune Docker images
+
+- name: Certbot block
+  when: not stat_cert.stat.exists
+  block:
+    - name: Template NGINX config for ACME challenge
+      ansible.builtin.template:
+        src: nginx_grafana.conf.j2
+        dest: "{{ labbot_nginx_conf_path_host }}/labbot_grafana.conf"
+        mode: '0644'
+        owner: root
+        group: root
+      vars:
+        acme_only: true
+
+    - name: Reload nginx
+      community.docker.docker_container_exec:
+        container: nginx
+        command: nginx -s reload
+
+    - name: Run certbot
+      community.docker.docker_container:
+        name: certbot
+        image: certbot/certbot:latest
+        restart_policy: "no"
+        command: >-
+          certonly --non-interactive --agree-tos
+          --webroot --webroot-path {{ labbot_certbot_webroot_path }}/
+          -m {{ labbot_certbot_letsencrypt_email }}
+          -d {{ labbot_grafana_domain }}
+          {{ '--dry-run' if labbot_certbot_dry_run else '' }}
+        volumes:
+          - "{{ labbot_certbot_www_bind }}"
+          - "{{ labbot_certbot_cert_bind }}"
+          - "{{ labbot_app_base_dir }}/nginx/certbot_logs:/var/log/letsencrypt"
+        detach: false
+        output_logs: true
+        cleanup: true
+        state: started
+
+- name: Template NGINX config
+  ansible.builtin.template:
+    src: nginx_grafana.conf.j2
+    dest: "{{ labbot_nginx_conf_path_host }}/labbot_grafana.conf"
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Reload nginx
+
+- name: Install certificate renewal cron schedule
+  ansible.builtin.cron:
+    name: "Certbot renewal"
+    cron_file: certbot_renew
+    user: root
+    special_time: weekly
+    # 2024-07-20: Test is bugged lmao
+    # noqa jinja[spacing]
+    job: >-
+      {%- set certbot_container = labbot_nginx_containers | selectattr('image', 'search', 'certbot') | first -%}
+      {%- set nginx_container = labbot_nginx_containers | selectattr('image', 'search', 'nginx') | first -%}
+      docker run --rm -it
+      --name {{ certbot_container.name }}
+      {%- for volume in certbot_container.volumes %}
+      -v {{ volume }}
+      {%- endfor %}
+      {{ certbot_container.image }}
+      {{ certbot_container.command }}
+      && docker exec {{ nginx_container.name }} nginx -s reload
