@@ -104,16 +104,17 @@ labbot_containers:
       GF_SECURITY_DISABLE_GRAVATAR: 'true'
       GF_SERVER_ENABLE_GZIP: 'true'
     volumes:
-      - "{{ labbot_app_base_dir }}/grafana/data:/var/lib/grafana"
-      - "{{ labbot_app_base_dir }}/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro"
-      - "{{ labbot_app_base_dir }}/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro"
-      - "{{ labbot_app_base_dir }}/grafana/provisioning/alerting:/etc/grafana/provisioning/alerting:ro"
-      - "{{ labbot_app_base_dir }}/grafana/dashboards:/mnt/dashboards"
-      - "{{ labbot_app_base_dir }}/grafana/home_dashboard.json:/usr/share/grafana/public/dashboards/home.json:ro"
-      - "{{ labbot_app_base_dir }}/grafana/labbot-fav32.png:/usr/share/grafana/public/img/fav32.png:ro"
-      - "{{ labbot_app_base_dir }}/grafana/labbot-fav32.png:/usr/share/grafana/public/img/apple-touch-icon.png:ro"
+      - "{{ labbot_grafana_app_dir }}/data:/var/lib/grafana"
+      - "{{ labbot_grafana_app_dir }}/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro"
+      - "{{ labbot_grafana_app_dir }}/provisioning/datasources:/etc/grafana/provisioning/datasources:ro"
+      - "{{ labbot_grafana_app_dir }}/provisioning/alerting:/etc/grafana/provisioning/alerting:ro"
+      - "{{ labbot_grafana_app_dir }}/dashboards:/mnt/dashboards"
+      - "{{ labbot_grafana_app_dir }}/home_dashboard.json:/usr/share/grafana/public/dashboards/home.json:ro"
+      - "{{ labbot_grafana_app_dir }}/labbot-fav32.png:/usr/share/grafana/public/img/fav32.png:ro"
+      - "{{ labbot_grafana_app_dir }}/labbot-fav32.png:/usr/share/grafana/public/img/apple-touch-icon.png:ro"
     networks: [name: web]
 
+labbot_grafana_app_dir: "{{ labbot_app_base_dir }}/grafana"
 
 labbot_certbot_webroot_path: /var/www/certbot
 labbot_certbot_cert_path: /etc/letsencrypt
