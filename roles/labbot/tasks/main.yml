@@ -3,8 +3,6 @@
 - name: Set facts
   ansible.builtin.set_fact:
     grafana_app_dir: "{{ labbot_app_base_dir }}/grafana"
-    grafana_user: >-
-      {{ (labbot_containers | selectattr('image', 'search', 'grafana/grafana'))[0]['user'] }}
     bot_container: >-
       {{ labbot_containers | selectattr('image', 'search', 'red-discordbot') | first }}
   tags: always

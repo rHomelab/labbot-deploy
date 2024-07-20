@@ -3,8 +3,8 @@
 - name: Create Grafana directories
   ansible.builtin.file:
     path: "{{ item }}"
-    owner: "{{ grafana_user }}"
-    group: "{{ grafana_user }}"
+    owner: "{{ labbot_grafana_container_user }}"
+    group: "{{ labbot_grafana_container_user }}"
     mode: '0755'
     state: directory
   loop: "{{ labbot_containers | selectattr('name', '==', 'grafana') | map(attribute='volumes') | flatten | map('split', ':') | map('first') }}"
@@ -47,8 +47,8 @@
   ansible.builtin.template:
     src: "{{ item.root + item.path }}"
     dest: "{{ grafana_app_dir }}/provisioning/{{ item.path | replace('.j2', '') }}"
-    owner: "{{ grafana_user }}"
-    group: "{{ grafana_user }}"
+    owner: "{{ labbot_grafana_container_user }}"
+    group: "{{ labbot_grafana_container_user }}"
     mode: '0440'
   loop: >-
     {{ lookup('filetree', 'templates/grafana_provisioning/') }}
@@ -63,8 +63,8 @@
   ansible.builtin.template:
     src: "{{ item.root + item.path }}"
     dest: "{{ grafana_app_dir }}/dashboards/{{ item.path | replace('.j2', '') }}"
-    owner: "{{ grafana_user }}"
-    group: "{{ grafana_user }}"
+    owner: "{{ labbot_grafana_container_user }}"
+    group: "{{ labbot_grafana_container_user }}"
     mode: '0440'
   loop: >-
     {{ lookup('filetree', 'templates/grafana_dashboards/') }}
