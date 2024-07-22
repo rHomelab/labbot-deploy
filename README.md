@@ -6,7 +6,7 @@ While it may work with others, this role is designed to be run against a Debian-
 
 ## Usage
 
-1. Enter the [`host_vars`](host_vars/) directory and create a copy of [`labbot_host.example.yml`](host_vars/labbot_host.example.yml) named `labbot_host.yml`.
+1. Create a copy of [`labbot_host.example.yml`](host_vars/labbot_host.example.yml) named `labbot_host.yml` in the [`host_vars`](host_vars/) directory.
 2. Set all relevant values in `labbot_host.yml`.
 3. Run the following commands:
 
