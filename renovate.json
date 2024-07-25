@@ -18,6 +18,10 @@
     {
       "matchPackageNames": ["quay.io/prometheus/node-exporter"],
       "customChangelogUrl": "https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md"
+    },
+    {
+      "matchPackageNames": ["gcr.io/cadvisor/cadvisor"],
+      "customChangelogUrl": "https://github.com/google/cadvisor/blob/master/CHANGELOG.md"
     }
   ]
 }
