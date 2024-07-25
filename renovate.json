@@ -21,7 +21,7 @@
     },
     {
       "matchPackageNames": ["gcr.io/cadvisor/cadvisor"],
-      "customChangelogUrl": "https://github.com/google/cadvisor/blob/master/CHANGELOG.md"
+      "customChangelogUrl": "https://github.com/google/cadvisor/releases"
     }
   ]
 }
