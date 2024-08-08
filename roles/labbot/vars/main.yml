@@ -2,7 +2,7 @@
 
 labbot_containers:
   - name: "{{ labbot_container_name_prefix }}bot"
-    image: ghcr.io/rhomelab/red-discordbot:3.5.11
+    image: ghcr.io/rhomelab/red-discordbot:3.5.12
     env:
       INSTANCE_NAME: LabBot
       PREFIX: '^'
