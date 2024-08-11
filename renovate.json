@@ -12,8 +12,8 @@
       "customChangelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot"
     },
     {
-      "matchPackageNames": ["prom/prometheus"],
-      "customChangelogUrl": "https://github.com/prometheus/prometheus"
+      "matchPackageNames": ["quay.io/prometheus/prometheus"],
+      "customChangelogUrl": "https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md"
     },
     {
       "matchPackageNames": ["quay.io/prometheus/node-exporter"],
