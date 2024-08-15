@@ -14,7 +14,7 @@
     {
       "matchPackageNames": ["ghcr.io/rhomelab/red-discordbot"],
       "changelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot",
-      "autoMerge": false
+      "automerge": false
     },
     {
       "matchPackageNames": ["quay.io/prometheus/prometheus"],
