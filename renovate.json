@@ -8,8 +8,13 @@
   },
   "packageRules": [
     {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
       "matchPackageNames": ["ghcr.io/rhomelab/red-discordbot"],
-      "changelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot"
+      "changelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot",
+      "autoMerge": false
     },
     {
       "matchPackageNames": ["quay.io/prometheus/prometheus"],
