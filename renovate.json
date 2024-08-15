@@ -9,19 +9,19 @@
   "packageRules": [
     {
       "matchPackageNames": ["ghcr.io/rhomelab/red-discordbot"],
-      "customChangelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot"
+      "changelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot"
     },
     {
       "matchPackageNames": ["quay.io/prometheus/prometheus"],
-      "customChangelogUrl": "https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md"
+      "changelogUrl": "https://github.com/prometheus/prometheus"
     },
     {
       "matchPackageNames": ["quay.io/prometheus/node-exporter"],
-      "customChangelogUrl": "https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md"
+      "changelogUrl": "https://github.com/prometheus/node_exporter"
     },
     {
       "matchPackageNames": ["gcr.io/cadvisor/cadvisor"],
-      "customChangelogUrl": "https://github.com/google/cadvisor/releases"
+      "changelogUrl": "https://github.com/google/cadvisor"
     }
   ]
 }
