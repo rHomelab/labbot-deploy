@@ -33,14 +33,18 @@ labbot_prometheus_open_port: false
 # Necessary only for testing/debugging
 labbot_cadvisor_open_port: false
 
-# Settings for bot data backup
+# Certbot settings for Grafana SSL certificate
+# Whether to run certbot in dry-run mode
+labbot_certbot_dry_run: false
+
+# Email address to register with LetsEncrypt
+# labbot_certbot_letsencrypt_email:
+
+
+# Enable backup
 labbot_enable_bot_backup: false
 
 # NOTE: All backup variables below must be defined ONLY if labbot_enable_bot_backup is true
-
-# labbot_backup_webdav_url:
-# labbot_backup_webdav_username:
-# labbot_backup_webdav_password:
 
 # Discord webhook URL for backup report
 # labbot_backup_report_webhook: ''
@@ -48,12 +52,20 @@ labbot_enable_bot_backup: false
 # User ID to mention upon backup failure
 # labbot_backup_report_mention_user_id: ''
 
-# Certbot settings for Grafana SSL certificate
-# Whether to run certbot in dry-run mode
-labbot_certbot_dry_run: false
+# The backup script uses rclone to upload backups to a remote destination. You must define an rclone remote here.
+# For more information, see https://github.com/stefangweichinger/ansible-rclone#rclone_configs-
+# labbot_rclone_configs: []
 
-# Email address to register with LetsEncrypt
-# labbot_certbot_letsencrypt_email:
+### EXAMPLE:
+# labbot_rclone_configs:
+#   - name: backups
+#     properties:
+#       type: webdav
+#       vendor: other
+#       url: https://webdav.example.com
+#       user: user
+#       pass: pa$$w0rd
+
 
 # Misc settings
 
