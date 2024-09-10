@@ -120,36 +120,47 @@ backup_notify() {
         {{ webhook }}
 }
 
+
 # Logging - https://serverfault.com/a/103569/334038
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3
 # Print START and current date to the log.
 date>$log
-printf "START \n">>$log
+printf "BACKUP START \n">>$log
 exec 1>>$log 2>&1
 
 archive="/tmp/{{ container_name }}-$(date +%y-%m-%d_%H-%M).tar.gz"
 
 cd "{{ bot_dir }}"
 
+echo -e "\n--- PAUSING BOT CONTAINER\n"
+
 # Pause container
 docker pause {{ container_name }} || exit_on_error
+
+echo -e "\n--- ARCHIVING BOT DATA\n"
 
 # Archive appdata
 (tar --exclude='__pycache__' -cvf - . | pigz -c -5 -p $(nproc) > "$archive") || exit_on_error
 
-# Get file count
-file_count=$(gzip -cd "$archive" | tar -tvv | grep -c ^-)
+echo -e "\n--- UNPAUSING BOT CONTAINER\n"
 
 # Unpause container
 docker unpause {{ container_name }}
+
+# Get file count
+file_count=$(gzip -cd "$archive" | tar -tvv | grep -c ^-)
 
 # Upload to cloud
 cd $(dirname "$archive")
 file=$(basename "$archive")
 
 {% for remote in rclone_remotes %}
+echo -e "\n--- UPLOADING BACKUP TO RCLONE REMOTE '{{ remote }}'\n"
+
 rclone --config $rclone_conf_path copyto -v "$archive" {{ remote }}:"$file" || exit_on_error
+
+echo -e "\n--- PRUNING OLD BACKUPS IN RCLONE REMOTE '{{ remote }}' (none to prune if empty result)\n"
 
 # Remove backups older than 1 month
 rclone --config $rclone_conf_path delete -v --min-age 1M --include "{{ container_name }}-*.tar.gz" {{ remote  }}:
@@ -158,9 +169,10 @@ rclone --config $rclone_conf_path delete -v --min-age 1M --include "{{ container
 {% endif %}
 {% endfor %}
 
+echo "--- REMOVING LOCAL COPY OF BACKUP"
 rm -fv "$archive"
 
 # Print END and two empty lines to the log.
-printf "END\n"
+printf "BACKUP END\n"
 
 backup_notify "success"
