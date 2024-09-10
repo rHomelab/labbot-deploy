@@ -129,7 +129,7 @@ date>$log
 printf "BACKUP START \n">>$log
 exec 1>>$log 2>&1
 
-archive="/tmp/{{ container_name }}-$(date +%y-%m-%d_%H-%M).tar.gz"
+archive="/tmp/{{ container_name }}_$(date +%Y-%m-%dT%H-%M-%S).tar.gz"
 
 cd "{{ bot_dir }}"
 
