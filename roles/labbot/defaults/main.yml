@@ -66,6 +66,8 @@ labbot_enable_bot_backup: false
 #       user: user
 #       pass: pa$$w0rd
 
+labbot_rclone_config_location: /root/.config/rclone/labbot_backup_remotes.conf
+
 
 # Misc settings
 
