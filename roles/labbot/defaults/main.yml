@@ -52,7 +52,8 @@ labbot_enable_bot_backup: false
 # User ID to mention upon backup failure
 # labbot_backup_report_mention_user_id: ''
 
-# The backup script uses rclone to upload backups to a remote destination. You must define an rclone remote here.
+# The backup script uses rclone to upload backups to a remote destination. You must define rclone remote(s) here.
+# Backups will be uploaded to ALL defined remotes.
 # For more information, see https://github.com/stefangweichinger/ansible-rclone#rclone_configs-
 # labbot_rclone_configs: []
 
