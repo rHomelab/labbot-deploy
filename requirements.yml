@@ -11,3 +11,5 @@ collections:
     version: 2.22.0
   - name: community.docker
     version: 3.12.1
+  - name: community.general
+    version: 9.4.0
