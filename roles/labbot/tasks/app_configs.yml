@@ -51,7 +51,7 @@
     group: "{{ labbot_grafana_container_user }}"
     mode: '0440'
   loop: >-
-    {{ lookup('filetree', 'templates/grafana_provisioning/') }}
+    {{ lookup('community.general.filetree', 'templates/grafana_provisioning/') }}
   loop_control:
     label: "{{ item.path }}"
   when: item.state == 'file'
@@ -67,7 +67,7 @@
     group: "{{ labbot_grafana_container_user }}"
     mode: '0440'
   loop: >-
-    {{ lookup('filetree', 'templates/grafana_dashboards/') }}
+    {{ lookup('community.general.filetree', 'templates/grafana_dashboards/') }}
   loop_control:
     label: "{{ item.path }}"
   when: item.state == 'file'
