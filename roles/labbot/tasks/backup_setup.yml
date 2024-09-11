@@ -10,6 +10,13 @@
     name: stefangweichinger.ansible_rclone
     apply:
       tags: rclone
+  vars:
+    # noqa var-naming[no-role-prefix]
+    rclone_release: "{{ labbot_rclone_release }}"
+    rclone_arch: "{{ labbot_rclone_arch }}"
+    rclone_configs: "{{ labbot_rclone_configs }}"
+    rclone_config_owner: "{{ labbot_rclone_config_owner }}"
+    rclone_config_location: "{{ labbot_rclone_config_location }}"
   tags: rclone
 
 - name: Install jq

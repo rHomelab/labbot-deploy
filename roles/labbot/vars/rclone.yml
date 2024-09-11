@@ -10,15 +10,6 @@ labbot_rclone_arch: >-
   else 'arm-v7' if ansible_architecture == 'armv7l'
   else ansible_architecture }}
 
-labbot_rclone_configs:
-  - name: backups
-    properties:
-      type: webdav
-      vendor: other
-      url: "{{ labbot_backup_webdav_url }}"
-      user: "{{ labbot_backup_webdav_username }}"
-      pass: "{{ labbot_backup_webdav_password }}"
-
 labbot_rclone_config_owner:
   OWNER: root
   GROUP: root

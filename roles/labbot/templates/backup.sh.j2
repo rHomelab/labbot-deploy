@@ -1,11 +1,13 @@
+{% set rclone_remotes = labbot_rclone_configs | map(attribute="name") %}
 #!/bin/bash
 
 # Set start time seconds
 start=$SECONDS
 
-DISCORD_USER_ID="{{ labbot_backup_report_mention_user_id }}"
-
 log="/var/log/backup-{{ container_name }}.log"
+
+discord_user_id="{{ labbot_backup_report_mention_user_id }}"
+rclone_conf_path="{{ labbot_rclone_config_location }}"
 
 exit_on_error() {
     exit_code=$1
@@ -32,8 +34,8 @@ backup_notify() {
     src_size_human=$(format_data_size "$src_size")
 
     # Get previous and new backup sizes and calculate difference as a human-readable string
-    last_backup_size=$(rclone ls "{{ labbot_rclone_configs[0].name }}:{{ container_name }}" | tail -2 | head -1 | awk '{print $1}')
-    this_backup_size=$(rclone ls "{{ labbot_rclone_configs[0].name }}:{{ container_name }}/${file}" | tail -1 | awk '{print $1}')
+    last_backup_size=$(rclone --config $rclone_conf_path ls "{{ rclone_remotes[0] }}:" | tail -2 | head -1 | awk '{print $1}')
+    this_backup_size=$(rclone --config $rclone_conf_path ls "{{ rclone_remotes[0] }}:${file}" | tail -1 | awk '{print $1}')
 
     this_backup_size_human=$(format_data_size "$this_backup_size")
     backup_size_diff=$(echo "$this_backup_size - $last_backup_size" | bc | format_data_size)
@@ -46,7 +48,7 @@ backup_notify() {
     # Set colour green and no mention if backup succeeded
     if [ "$1" == "failed" ]; then
         colour="16711680"
-        content="<@!${DISCORD_USER_ID}> Job failed!"
+        content="<@!${discord_user_id}> Job failed!"
     else
         colour="65280"
         content=""
@@ -118,42 +120,59 @@ backup_notify() {
         {{ webhook }}
 }
 
+
 # Logging - https://serverfault.com/a/103569/334038
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3
 # Print START and current date to the log.
 date>$log
-printf "START \n">>$log
+printf "BACKUP START \n">>$log
 exec 1>>$log 2>&1
 
-archive="/tmp/{{ container_name }}-$(date +%y-%m-%d_%H-%M).tar.gz"
+archive="/tmp/{{ container_name }}_$(date +%Y-%m-%dT%H-%M-%S).tar.gz"
 
 cd "{{ bot_dir }}"
+
+echo -e "\n--- PAUSING BOT CONTAINER\n"
 
 # Pause container
 docker pause {{ container_name }} || exit_on_error
 
+echo -e "\n--- ARCHIVING BOT DATA\n"
+
 # Archive appdata
 (tar --exclude='__pycache__' -cvf - . | pigz -c -5 -p $(nproc) > "$archive") || exit_on_error
 
-# Get file count
-file_count=$(gzip -cd "$archive" | tar -tvv | grep -c ^-)
+echo -e "\n--- UNPAUSING BOT CONTAINER\n"
 
 # Unpause container
 docker unpause {{ container_name }}
 
+# Get file count
+file_count=$(gzip -cd "$archive" | tar -tvv | grep -c ^-)
+
 # Upload to cloud
 cd $(dirname "$archive")
-rclone mkdir {{ labbot_rclone_configs[0].name }}:{{ container_name }}
-
 file=$(basename "$archive")
-rclone moveto -v "$archive" {{ labbot_rclone_configs[0].name }}:{{ container_name }}/"$file"
 
-# Remove old backups
-# M=month, m=min
-rclone delete -v --min-age 1M {{ labbot_rclone_configs[0].name }}:{{ container_name }}
+{% for remote in rclone_remotes %}
+echo -e "\n--- UPLOADING BACKUP TO RCLONE REMOTE '{{ remote }}'\n"
+
+rclone --config $rclone_conf_path copyto -v "$archive" {{ remote }}:"$file" || exit_on_error
+
+echo -e "\n--- PRUNING OLD BACKUPS IN RCLONE REMOTE '{{ remote }}' (none to prune if empty result)\n"
+
+# Remove backups older than 1 month
+rclone --config $rclone_conf_path delete -v --min-age 1M --include "{{ container_name }}-*.tar.gz" {{ remote  }}:
+{% if not loop.last %}
+
+{% endif %}
+{% endfor %}
+
+echo "--- REMOVING LOCAL COPY OF BACKUP"
+rm -fv "$archive"
 
 # Print END and two empty lines to the log.
-printf "END\n"
+printf "BACKUP END\n"
 
 backup_notify "success"

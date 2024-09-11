@@ -7,7 +7,7 @@ While it may work with others, this role is designed to be run against a Debian-
 ## Usage
 
 1. Enter the [`host_vars`](host_vars/) directory and create a copy of [`labbot_host.example.yml`](host_vars/labbot_host.example.yml) named `labbot_host.yml`.
-2. Set all relevant values in `labbot_host.yml`.
+2. Set all relevant values in `labbot_host.yml`. See [Variables](#variables) for more info.
 3. Run the following commands:
 
 ```sh
@@ -41,6 +41,51 @@ Enter a chat with the bot and run the following (where `[p]` is the configured p
 [p]cog install homelab prometheus_exporter
 [p]load prometheus_exporter
 ```
+
+## Variables
+
+Below is a description of the variables, both required and optional, for this deployment. Variables marked as **required** must be defined in `host_vars` as described in [Usage](#usage).
+
+### Deployment Config
+
+* `labbot_app_base_dir` (optional): The parent directory for container configuration paths. Default: `/opt`.
+* `labbot_container_name_prefix` (optional): Prefix for all container names. Default: `labbot_`.
+
+### Bot Config
+
+* `labbot_discord_token` (**required**): The Discord bot token for LabBot.
+
+### Monitoring/Web Config
+
+* `labbot_grafana_domain` (**required**): Domain name for the Grafana web interface.
+* `labbot_grafana_username` (optional): Username for Grafana access. Default: `labbot_admin`.
+* `labbot_grafana_password` (**required**): Password for Grafana access.
+* `labbot_grafana_container_user` (optional): User ID for Grafana container. Default: current user ID.
+* `labbot_prometheus_container_user` (optional): User ID for Prometheus container. Default: current user ID.
+* `labbot_prometheus_users` (**required**): List of users for Prometheus authentication. Each user requires:
+  * `username` (**required**): Username for Prometheus.
+  * `password` (**required**): Plaintext password for Prometheus.
+  * `password_bcrypt` (**required**): Hashed version of the password. This can be generated using: `htpasswd -nBC 10 '<password>' | tr -d ':\n'`.
+* `labbot_prometheus_scrape_interval` (optional): Prometheus metrics scraping interval in seconds. Default: `10`.
+* `labbot_prometheus_open_port` (optional): Whether to bind Prometheus UI port on the host for debugging. Default: `false`.
+* `labbot_cadvisor_open_port` (optional): Whether to bind cAdvisor UI port on the host for debugging. Default: `false`.
+* `labbot_certbot_letsencrypt_email` (**required**): Email address for LetsEncrypt certificate registration.
+* `labbot_certbot_dry_run` (optional): Whether to run Certbot (for SSL certificates) in dry-run mode for testing/debugging. Default: `false`.
+
+### Backup Config (Optional)
+
+> [!NOTE]
+> The backup variables below are only needed if backups are enabled (`labbot_enable_bot_backup: true`).
+
+* `labbot_enable_bot_backup` (optional): Enable or disable bot backups. Default: `false`.
+
+* `labbot_backup_report_webhook` (required if backup enabled): Discord webhook URL for backup report notifications.
+* `labbot_backup_report_mention_user_id` (required if backup enabled): User ID to mention in case of a backup failure.
+* `labbot_rclone_configs` (required if backup enabled): List of rclone remotes for backup uploads. For more information, see the [stefangweichinger.ansible-rclone](https://github.com/stefangweichinger/ansible-rclone/blob/main/README.md#rclone_configs-) documentation.
+* `labbot_rclone_config_location` (optional): Path to the rclone configuration file. Default: `/root/.config/rclone/labbot_backup_remotes.conf`.
+
+### Misc. Config (Optional)
+* `labbot_ssh_keys` (optional): List of SSH keys to install on the host.
 
 ---
 

@@ -1,8 +1,12 @@
 ---
 
-###################### NOTE ######################
-# All commented settings must be defined in host_vars!
-##################################################
+################## NOTE ##################
+# All commented settings must be defined #
+#  in host_vars unless otherwise stated  #
+##########################################
+
+
+############ Deployment config ###########
 
 # Parent directory for container config paths
 labbot_app_base_dir: /opt
@@ -10,18 +14,32 @@ labbot_app_base_dir: /opt
 # Prefix for all container names
 labbot_container_name_prefix: labbot_
 
-# Discord bot token for LabBot
-# labbot_discord_token:
 
-# labbot_grafana_domain:
+############ Bot config ##################
+
+# Discord bot token for LabBot
+# labbot_discord_token: ''
+
+
+############ Monitoring/web config #######
+
+# labbot_grafana_domain: ''
 labbot_grafana_username: labbot_admin
-# labbot_grafana_password:
+# labbot_grafana_password: ''
 
 labbot_grafana_container_user: "{{ ansible_user_uid }}"
 labbot_prometheus_container_user: "{{ ansible_user_uid }}"
 
 # List of dictionaries with keys `username`, `password`, and `password_bcrypt`
-labbot_prometheus_users: []
+# labbot_prometheus_users: []
+
+### EXAMPLE:
+# labbot_prometheus_users:
+#   - username: admin
+#     password: '!CHANGE_ME!'
+#     # Hashed version of the password
+#     # Can be generated like so: htpasswd -nBC 10 '<password>' | tr -d ':\n'
+#     password_bcrypt: '<hash here>'
 
 labbot_prometheus_scrape_interval: 10 # seconds
 
@@ -33,14 +51,20 @@ labbot_prometheus_open_port: false
 # Necessary only for testing/debugging
 labbot_cadvisor_open_port: false
 
-# Settings for bot data backup
+# Email address to register with LetsEncrypt
+# labbot_certbot_letsencrypt_email: ''
+
+# Certbot settings for Grafana SSL certificate
+# Whether to run certbot in dry-run mode for testing/debugging.
+labbot_certbot_dry_run: false
+
+
+############ Backup config ###############
+
+# Enable backup
 labbot_enable_bot_backup: false
 
 # NOTE: All backup variables below must be defined ONLY if labbot_enable_bot_backup is true
-
-# labbot_backup_webdav_url:
-# labbot_backup_webdav_username:
-# labbot_backup_webdav_password:
 
 # Discord webhook URL for backup report
 # labbot_backup_report_webhook: ''
@@ -48,14 +72,25 @@ labbot_enable_bot_backup: false
 # User ID to mention upon backup failure
 # labbot_backup_report_mention_user_id: ''
 
-# Certbot settings for Grafana SSL certificate
-# Whether to run certbot in dry-run mode
-labbot_certbot_dry_run: false
+# The backup script uses rclone to upload backups to a remote destination. You must define rclone remote(s) here.
+# Backups will be uploaded to ALL defined remotes.
+# For more information, see https://github.com/stefangweichinger/ansible-rclone#rclone_configs-
+# labbot_rclone_configs: []
 
-# Email address to register with LetsEncrypt
-# labbot_certbot_letsencrypt_email:
+### EXAMPLE:
+# labbot_rclone_configs:
+#   - name: backups
+#     properties:
+#       type: webdav
+#       vendor: other
+#       url: https://webdav.example.com
+#       user: user
+#       pass: pa$$w0rd
 
-# Misc settings
+labbot_rclone_config_location: /root/.config/rclone/labbot_backup_remotes.conf
+
+
+############ Misc. config ################
 
 # [OPTIONAL] SSH keys to install on the bot host
 # EXAMPLE:
