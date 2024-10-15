@@ -81,7 +81,11 @@ Below is a description of the variables, both required and optional, for this de
 
 * `labbot_backup_report_webhook` (required if backup enabled): Discord webhook URL for backup report notifications.
 * `labbot_backup_report_mention_user_id` (required if backup enabled): User ID to mention in case of a backup failure.
-* `labbot_rclone_configs` (required if backup enabled): List of rclone remotes for backup uploads. For more information, see the [stefangweichinger.ansible-rclone](https://github.com/stefangweichinger/ansible-rclone/blob/main/README.md#rclone_configs-) documentation.
+* `labbot_rclone_configs` (required if backup enabled): List of rclone remotes for backup uploads.  
+  For more information, see the [stefangweichinger.ansible-rclone](https://github.com/stefangweichinger/ansible-rclone/blob/main/README.md#rclone_configs-) documentation.
+* `labbot_rclone_backup_remotes` (optional): List of strings, where each string is the name of a defined rclone remote (see `labbot_rclone_configs`), to which backups should be uploaded.  
+  This is useful if you use virtual remotes in rclone, such as the [crypt](https://rclone.org/crypt/) remote, as you would likely not want the backup to be uploaded to both your origin and `crypt` remote, for example.  
+  If unset or an empty list (default), backups will be uploaded to ALL remotes.
 * `labbot_rclone_config_location` (optional): Path to the rclone configuration file. Default: `/root/.config/rclone/labbot_backup_remotes.conf`.
 
 ### Misc. Config (Optional)

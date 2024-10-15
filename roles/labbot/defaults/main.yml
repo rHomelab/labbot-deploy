@@ -64,7 +64,7 @@ labbot_certbot_dry_run: false
 # Enable backup
 labbot_enable_bot_backup: false
 
-# NOTE: All backup variables below must be defined ONLY if labbot_enable_bot_backup is true
+# NOTE: The backup variables below only need to be defined if labbot_enable_bot_backup is true
 
 # Discord webhook URL for backup report
 # labbot_backup_report_webhook: ''
@@ -73,7 +73,7 @@ labbot_enable_bot_backup: false
 # labbot_backup_report_mention_user_id: ''
 
 # The backup script uses rclone to upload backups to a remote destination. You must define rclone remote(s) here.
-# Backups will be uploaded to ALL defined remotes.
+# Backups will be uploaded to ALL defined remotes by default. See `labbot_rclone_backup_remotes` to change this.
 # For more information, see https://github.com/stefangweichinger/ansible-rclone#rclone_configs-
 # labbot_rclone_configs: []
 
@@ -88,6 +88,14 @@ labbot_enable_bot_backup: false
 #       pass: pa$$w0rd
 
 labbot_rclone_config_location: /root/.config/rclone/labbot_backup_remotes.conf
+
+# Backups will be uploaded to ALL defined remotes if this is unset or an empty list.
+# If set, backups will only be uploaded to the specified remotes.
+labbot_rclone_backup_remotes: []
+
+### EXAMPLE:
+# labbot_rclone_backup_remotes:
+#   - backups
 
 
 ############ Misc. config ################

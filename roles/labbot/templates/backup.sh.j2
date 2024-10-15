@@ -1,4 +1,3 @@
-{% set rclone_remotes = labbot_rclone_configs | map(attribute="name") %}
 #!/bin/bash
 
 # Set start time seconds
@@ -34,8 +33,8 @@ backup_notify() {
     src_size_human=$(format_data_size "$src_size")
 
     # Get previous and new backup sizes and calculate difference as a human-readable string
-    last_backup_size=$(rclone --config $rclone_conf_path ls "{{ rclone_remotes[0] }}:" | tail -2 | head -1 | awk '{print $1}')
-    this_backup_size=$(rclone --config $rclone_conf_path ls "{{ rclone_remotes[0] }}:${file}" | tail -1 | awk '{print $1}')
+    last_backup_size=$(rclone --config $rclone_conf_path ls "{{ remotes[0] }}:" | tail -2 | head -1 | awk '{print $1}')
+    this_backup_size=$(rclone --config $rclone_conf_path ls "{{ remotes[0] }}:${file}" | tail -1 | awk '{print $1}')
 
     this_backup_size_human=$(format_data_size "$this_backup_size")
     backup_size_diff=$(echo "$this_backup_size - $last_backup_size" | bc | format_data_size)
@@ -155,7 +154,7 @@ file_count=$(gzip -cd "$archive" | tar -tvv | grep -c ^-)
 cd $(dirname "$archive")
 file=$(basename "$archive")
 
-{% for remote in rclone_remotes %}
+{% for remote in remotes %}
 echo -e "\n--- UPLOADING BACKUP TO RCLONE REMOTE '{{ remote }}'\n"
 
 rclone --config $rclone_conf_path copyto -v "$archive" {{ remote }}:"$file" || exit_on_error
