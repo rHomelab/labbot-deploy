@@ -24,6 +24,14 @@
     name: jq
     state: present
 
+- name: Validate backup remotes
+  ansible.builtin.assert:
+    that: item in labbot_rclone_configs | map(attribute="name")
+    success_msg: "{{ item }} is a defined rclone remote"
+    fail_msg: "{{ item }} is not a defined rclone remote"
+  loop: "{{ labbot_rclone_backup_remotes }}"
+  when: labbot_rclone_backup_remotes
+
 - name: Template bot backup script
   ansible.builtin.template:
     src: backup.sh.j2
@@ -33,6 +41,11 @@
     bot_dir: "{{ (bot_container.volumes[0] | split(':'))[0] }}"
     container_name: "{{ bot_container.name }}"
     webhook: "{{ labbot_backup_report_webhook }}"
+    remotes: >-
+      {{
+        labbot_rclone_backup_remotes if labbot_rclone_backup_remotes | length > 0
+        else labbot_rclone_configs | map(attribute='name')
+      }}
 
 - name: Install cron
   ansible.builtin.apt:
