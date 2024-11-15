@@ -2,7 +2,7 @@
 
 roles:
   - name: stefangweichinger.ansible_rclone
-    version: 0.2.0
+    version: 0.2.1
 
 collections:
   - name: ansible.posix
