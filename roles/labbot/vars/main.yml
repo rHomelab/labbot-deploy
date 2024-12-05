@@ -89,7 +89,7 @@ labbot_containers:
     networks: [name: monitoring]
 
   - name: "{{ labbot_container_name_prefix }}grafana"
-    image: grafana/grafana:11.3.2
+    image: grafana/grafana:11.4.0
     user: "{{ labbot_grafana_container_user }}"
     ports: [3000:3000]
     env:
