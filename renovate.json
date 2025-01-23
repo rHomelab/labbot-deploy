@@ -27,6 +27,10 @@
     {
       "matchPackageNames": ["gcr.io/cadvisor/cadvisor"],
       "changelogUrl": "https://github.com/google/cadvisor"
+    },
+    {
+      "matchPackageNames": ["/ansible-lint/"],
+      "groupName": "ansible-lint"
     }
   ]
 }
