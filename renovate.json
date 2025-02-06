@@ -1,7 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    ":configMigration",
+    "github>tigattack/repo_utils:renovate_ansible_preset.json5"
   ],
   "ansible": {
     "fileMatch": ["(^|/)(tasks|vars|defaults)/[^/]+\\.ya?ml$"]
@@ -13,7 +15,7 @@
     },
     {
       "matchPackageNames": ["ghcr.io/rhomelab/red-discordbot"],
-      "changelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot",
+      "changelogUrl": "https://docs.discord.red/en/stable/changelog.html",
       "automerge": false
     },
     {
@@ -28,9 +30,5 @@
       "matchPackageNames": ["gcr.io/cadvisor/cadvisor"],
       "changelogUrl": "https://github.com/google/cadvisor"
     },
-    {
-      "matchPackageNames": ["/ansible-lint/"],
-      "groupName": "ansible-lint"
-    }
   ]
 }
