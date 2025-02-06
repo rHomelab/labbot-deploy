@@ -1,7 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    ":configMigration",
+    "github>tigattack/repo_utils:renovate_ansible_preset.json5"
   ],
   "ansible": {
     "fileMatch": ["(^|/)(tasks|vars|defaults)/[^/]+\\.ya?ml$"]
@@ -13,24 +15,24 @@
     },
     {
       "matchPackageNames": ["ghcr.io/rhomelab/red-discordbot"],
-      "changelogUrl": "https://github.com/Cog-Creators/Red-DiscordBot",
+      "changelogUrl": "https://docs.discord.red/en/stable/changelog.html",
       "automerge": false
     },
     {
       "matchPackageNames": ["quay.io/prometheus/prometheus"],
-      "changelogUrl": "https://github.com/prometheus/prometheus"
+      "changelogUrl": "https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md"
     },
     {
       "matchPackageNames": ["quay.io/prometheus/node-exporter"],
-      "changelogUrl": "https://github.com/prometheus/node_exporter"
+      "changelogUrl": "https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md"
     },
     {
       "matchPackageNames": ["gcr.io/cadvisor/cadvisor"],
-      "changelogUrl": "https://github.com/google/cadvisor"
+      "changelogUrl": "https://github.com/google/cadvisor/blob/master/CHANGELOG.md"
     },
     {
-      "matchPackageNames": ["/ansible-lint/"],
-      "groupName": "ansible-lint"
+      "matchPackageNames": ["grafana/grafana"],
+      "changelogUrl": "https://github.com/grafana/grafana/blob/main/CHANGELOG.md"
     }
   ]
 }
