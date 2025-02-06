@@ -20,15 +20,19 @@
     },
     {
       "matchPackageNames": ["quay.io/prometheus/prometheus"],
-      "changelogUrl": "https://github.com/prometheus/prometheus"
+      "changelogUrl": "https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md"
     },
     {
       "matchPackageNames": ["quay.io/prometheus/node-exporter"],
-      "changelogUrl": "https://github.com/prometheus/node_exporter"
+      "changelogUrl": "https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md"
     },
     {
       "matchPackageNames": ["gcr.io/cadvisor/cadvisor"],
-      "changelogUrl": "https://github.com/google/cadvisor"
+      "changelogUrl": "https://github.com/google/cadvisor/blob/master/CHANGELOG.md"
     },
+    {
+      "matchPackageNames": ["grafana/grafana"],
+      "changelogUrl": "https://github.com/grafana/grafana/blob/main/CHANGELOG.md",
+    }
   ]
 }
