@@ -12,9 +12,9 @@ While it may work with others, this role is designed to be run against a Debian-
 
 ```sh
 # Create a Python virtual environment (venv)
-python3 -m venv venv
+python3 -m venv .venv
 # Activate the venv
-source venv/bin/activate
+source .venv/bin/activate
 # Install Ansible (in the venv)
 pip install ansible
 # Install required Ansible roles/collections
