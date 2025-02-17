@@ -4,5 +4,5 @@
     "*.yaml": "ansible",
     "*.j2": "ansible-jinja",
   },
-  "ansible.python.activationScript": "venv/bin/activate",
+  "ansible.python.activationScript": ".venv/bin/activate",
 }

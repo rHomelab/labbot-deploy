@@ -1,5 +1,6 @@
 .dependencies
-venv
+.ansible
+.venv
 plugins/
 host_vars/labbot_host.yml
 .envrc
