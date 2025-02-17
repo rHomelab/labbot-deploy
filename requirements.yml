@@ -13,3 +13,6 @@ collections:
     version: 4.4.0
   - name: community.general
     version: 10.3.1
+  # Not required for base functionality, but I (tigattack) use it in my local host_vars.
+  - name: ripplefcl.bwscache
+    version: 1.0.0
