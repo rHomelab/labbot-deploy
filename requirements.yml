@@ -12,7 +12,7 @@ collections:
   - name: community.docker
     version: 4.5.2
   - name: community.general
-    version: 10.4.0
+    version: 10.5.0
   # Not required for base functionality, but I (tigattack) use it in my local host_vars.
   - name: ripplefcl.bwscache
     version: 1.1.0
