@@ -37,7 +37,7 @@
 - name: Deploy NGINX container
   community.docker.docker_container:
     name: "{{ labbot_container_name_prefix }}nginx"
-    image: nginx:1.27-alpine
+    image: nginx:1.28-alpine
     ports: [80:80, 443:443]
     volumes:
       - "{{ labbot_nginx_conf_path_host }}:/etc/nginx/conf.d:ro"
