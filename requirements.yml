@@ -15,4 +15,4 @@ collections:
     version: 10.6.0
   # Not required for base functionality, but I (tigattack) use it in my local host_vars.
   - name: ripplefcl.bwscache
-    version: 1.1.0
+    version: 1.1.1
