@@ -6,7 +6,7 @@
     "github>tigattack/repo_utils:renovate_ansible_preset.json5"
   ],
   "ansible": {
-    "fileMatch": ["(^|/)(tasks|vars|defaults)/[^/]+\\.ya?ml$"]
+    "managerFilePatterns": ["(^|/)(tasks|vars|defaults)/[^/]+\\.ya?ml$"]
   },
   "packageRules": [
     {
