@@ -6,32 +6,49 @@
     "github>tigattack/repo_utils:renovate_ansible_preset.json5"
   ],
   "ansible": {
-    "fileMatch": ["(^|/)(tasks|vars|defaults)/[^/]+\\.ya?ml$"]
+    "managerFilePatterns": [
+      "/(^|/)(tasks|vars|defaults)/[^/]+\\.ya?ml$/"
+    ]
   },
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
       "automerge": true
     },
     {
-      "matchPackageNames": ["ghcr.io/rhomelab/red-discordbot"],
+      "matchPackageNames": [
+        "ghcr.io/rhomelab/red-discordbot"
+      ],
       "changelogUrl": "https://docs.discord.red/en/stable/changelog.html",
       "automerge": false
     },
     {
-      "matchPackageNames": ["quay.io/prometheus/prometheus"],
+      "matchPackageNames": [
+        "quay.io/prometheus/prometheus"
+      ],
       "changelogUrl": "https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md"
     },
     {
-      "matchPackageNames": ["quay.io/prometheus/node-exporter"],
+      "matchPackageNames": [
+        "quay.io/prometheus/node-exporter"
+      ],
       "changelogUrl": "https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md"
     },
     {
-      "matchPackageNames": ["gcr.io/cadvisor/cadvisor"],
+      "matchPackageNames": [
+        "gcr.io/cadvisor/cadvisor"
+      ],
       "changelogUrl": "https://github.com/google/cadvisor/blob/master/CHANGELOG.md"
     },
     {
-      "matchPackageNames": ["grafana/grafana"],
+      "matchPackageNames": [
+        "grafana/grafana"
+      ],
       "changelogUrl": "https://github.com/grafana/grafana/blob/main/CHANGELOG.md"
     }
   ]
