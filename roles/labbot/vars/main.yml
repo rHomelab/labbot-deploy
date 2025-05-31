@@ -18,7 +18,7 @@ labbot_containers:
     memory_swap: 2500M
 
   - name: "{{ labbot_container_name_prefix }}prometheus"
-    image: quay.io/prometheus/prometheus:v3.4.0
+    image: quay.io/prometheus/prometheus:v3.4.1
     user: "{{ labbot_prometheus_container_user }}"
     command:
       - --config.file=/etc/prometheus/prometheus.yml
