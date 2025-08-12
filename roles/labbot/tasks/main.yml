@@ -1,6 +1,7 @@
 ---
 
-- name: Set container facts # noqa var-naming[no-jinja]
+# Creates vars such as `bot_container`, `prometheus_container`, etc. for ease of reference.
+- name: Set container facts
   ansible.builtin.set_fact:
     "{{ item.name | replace(labbot_container_name_prefix, '') }}_container": "{{ item }}"
   loop: "{{ labbot_containers }}"
@@ -19,7 +20,6 @@
   community.docker.docker_network:
     name: "{{ item.name }}"
     state: present
-  register: docker_network
   loop: "{{ labbot_containers | selectattr('networks', 'defined') | map(attribute='networks') | default([]) | flatten | unique }}"
 
 - name: Deploy containers # noqa args[module]

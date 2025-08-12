@@ -26,7 +26,7 @@
 
 - name: Reload nginx
   community.docker.docker_container_exec:
-    container: "{{ nginx_container.container.Name | replace('/', '') }}"
+    container: "{{ labbot_nginx_container.container.Name | replace('/', '') }}"
     command: nginx -s reload
 
 - name: Prune Docker images
