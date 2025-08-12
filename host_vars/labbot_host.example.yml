@@ -12,6 +12,9 @@ ansible_password: # password
 # OR
 ansible_ssh_private_key_file: # path to private key
 
+# Set ansible_managed template string for templated files
+ansible_managed: 'Ansible Managed. Last edited on %Y-%m-%d at %H:%M:%S.'
+
 # Bot and monitoring settings
 labbot_discord_token: '!CHANGE_ME!'
 
