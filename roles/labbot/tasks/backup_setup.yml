@@ -30,7 +30,7 @@
     success_msg: "{{ item }} is a defined rclone remote"
     fail_msg: "{{ item }} is not a defined rclone remote"
   loop: "{{ labbot_rclone_backup_remotes }}"
-  when: labbot_rclone_backup_remotes
+  when: labbot_rclone_backup_remotes | length > 0
 
 - name: Template bot backup script
   ansible.builtin.template:

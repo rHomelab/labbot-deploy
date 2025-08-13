@@ -5,10 +5,10 @@ labbot_rclone_release: stable
 labbot_install_manpages: true
 
 labbot_rclone_arch: >-
-  {{ 'amd64' if ansible_architecture == 'x86_64'
-  else 'arm64' if ansible_architecture == 'aarch64'
-  else 'arm-v7' if ansible_architecture == 'armv7l'
-  else ansible_architecture }}
+  {{ 'amd64' if ansible_facts.architecture == 'x86_64'
+  else 'arm64' if ansible_facts.architecture == 'aarch64'
+  else 'arm-v7' if ansible_facts.architecture == 'armv7l'
+  else ansible_facts.architecture }}
 
 labbot_rclone_config_owner:
   OWNER: root
