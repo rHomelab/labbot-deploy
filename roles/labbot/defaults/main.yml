@@ -43,6 +43,9 @@ labbot_prometheus_container_user: "{{ ansible_user_uid }}"
 
 labbot_prometheus_scrape_interval: 10 # seconds
 
+# Prometheus retention size (e.g. 500MB, 2GB, 1TB). Set to 0 for unlimited.
+labbot_prometheus_retention_size: 0
+
 # Whether to bind the prometheus web UI port on the host
 # Necessary only for testing/debugging
 labbot_prometheus_open_port: false

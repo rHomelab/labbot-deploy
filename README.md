@@ -67,6 +67,7 @@ Below is a description of the variables, both required and optional, for this de
   * `password` (**required**): Plaintext password for Prometheus.
   * `password_bcrypt` (**required**): Hashed version of the password. This can be generated using: `htpasswd -nBC 10 '<password>' | tr -d ':\n'`.
 * `labbot_prometheus_scrape_interval` (optional): Prometheus metrics scraping interval in seconds. Default: `10`.
+* `labbot_prometheus_retention_size` (optional): Prometheus [retention size](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Default: `0` (disabled).
 * `labbot_prometheus_open_port` (optional): Whether to bind Prometheus UI port on the host for debugging. Default: `false`.
 * `labbot_cadvisor_open_port` (optional): Whether to bind cAdvisor UI port on the host for debugging. Default: `false`.
 * `labbot_certbot_letsencrypt_email` (**required**): Email address for LetsEncrypt certificate registration.
