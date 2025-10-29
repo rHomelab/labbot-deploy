@@ -27,8 +27,8 @@
 - name: Validate backup remotes
   ansible.builtin.assert:
     that: item in labbot_rclone_configs | map(attribute="name")
-    success_msg: "{{ item }} is a defined rclone remote"
     fail_msg: "{{ item }} is not a defined rclone remote"
+    quiet: true
   loop: "{{ labbot_rclone_backup_remotes }}"
   when: labbot_rclone_backup_remotes | length > 0
 
