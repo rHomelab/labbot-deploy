@@ -3,15 +3,16 @@
 labbot_containers:
   - name: "{{ labbot_container_name_prefix }}bot"
     image: ghcr.io/rhomelab/red-discordbot:3.5.22
+    # Useful if a cog is fatally breaking the bot.
+    # See other params here: https://github.com/rHomelab/Red-DiscordBot-Docker/blob/main/.github/redbot-arguments.txt
+    # command: '--no-cogs --load-cogs downloader'
+    # Message cache default is 1000
+    command: '--message-cache-size 2000'
     env:
       INSTANCE_NAME: LabBot
       PREFIX: '^'
       TOKEN: "{{ labbot_discord_token }}"
       TEAM_MEMBERS_ARE_OWNERS: 'true'
-    # Useful if a cog is fatally breaking the bot.
-    # See other params here: https://github.com/rHomelab/Red-DiscordBot-Docker/blob/main/.github/redbot-arguments.txt
-    # command: '--no-cogs --load-cogs downloader'
-    command: '--message-cache-size 2000' # Default 1000
     volumes: ["{{ labbot_app_base_dir }}/labbot:/redbot/data"]
     networks: [name: bots]
     memory: 2G

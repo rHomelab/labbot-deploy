@@ -16,18 +16,21 @@
       tags: app_configs
   tags: app_configs
 
-- name: Create Docker network
-  community.docker.docker_network:
-    name: "{{ item.name }}"
-    state: present
-  loop: "{{ labbot_containers | selectattr('networks', 'defined') | map(attribute='networks') | default([]) | flatten | unique }}"
+- name: Docker deploy
+  tags: containers
+  block:
+    - name: Create Docker network
+      community.docker.docker_network:
+        name: "{{ item.name }}"
+        state: present
+      loop: "{{ labbot_containers | selectattr('networks', 'defined') | map(attribute='networks') | default([]) | flatten | unique }}"
 
-- name: Deploy containers # noqa args[module]
-  community.docker.docker_container: "{{ item }}"
-  loop: "{{ labbot_containers }}"
-  loop_control:
-    label: "{{ item.name }}"
-  notify: Prune Docker images
+    - name: Deploy containers
+      community.docker.docker_container: "{{ item }}"
+      loop: "{{ labbot_containers }}"
+      loop_control:
+        label: "{{ item.name }}"
+      notify: Prune Docker images
 
 - name: Deploy reverse proxy for Grafana
   ansible.builtin.include_tasks:
