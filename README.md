@@ -1,8 +1,14 @@
 # labbot-deploy
 
-This repository containers an Ansible playbook & role to deploy LabBot and related monitoring infrastructure (Grafana, Prometheus, cAdvisor, and node_exporter).
+This repository containers an Ansible playbook & role to deploy Homelab's LabBot application stack:
 
-While it may work with others, this role is designed to be run against a Debian-based Linux distribution.
+- Red-DiscordBot (using our [own image](https://github.com/rHomelab/Red-DiscordBot-Docker))
+- Grafana
+- Prometheus
+- cAdvisor
+- node_exporter
+
+While it may work with others, this is designed to be run against a Debian-based Linux distribution.
 
 ## Usage
 
@@ -24,7 +30,10 @@ ansible-playbook playbook.yml
 ```
 
 > [!TIP]
-> The `labbot` Ansible role contains several optional components that are not included in the `labbot_host.yml` example file for the sake of simplicity; see [`roles/labbot/defaults/main.yml`](roles/labbot/defaults/main.yml) for advanced values such as backup options and more.
+> The `labbot` Ansible role contains several optional components that are not explicitly defined in the `labbot_host.yml` example file for the sake of simplicity; see [`roles/labbot/defaults/main.yml`](roles/labbot/defaults/main.yml) for advanced values such as backup options and more.
+
+> [!NOTE]
+> The `labbot` Ansible role creates a cron schedule to restart the bot container once a month. This works around memory leaks we have observed in Red.
 
 ## Bot monitoring setup
 
@@ -96,4 +105,4 @@ Below is a description of the variables, both required and optional, for this de
 
 ## Disclaimer
 
-Most common settings are variablised, however I only prepared this for shared use/more generic environments after extracting it from my own infrastructure definitions, so there may be some things that are still 'hardcoded', otherwise inoptimal for a shared configuration, or not fully tested.
+Most common settings are variablised, however I only prepared this for shared use/more generic environments after extracting it from my own infrastructure definitions, so there may be some things that are still undocumented, 'hardcoded', otherwise inoptimal for a shared configuration, or not fully tested.
