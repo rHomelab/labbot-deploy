@@ -25,7 +25,7 @@
         state: present
       loop: "{{ labbot_containers | selectattr('networks', 'defined') | map(attribute='networks') | default([]) | flatten | unique }}"
 
-    - name: Deploy containers # noqa args[module]
+    - name: Deploy containers
       community.docker.docker_container: "{{ item }}"
       loop: "{{ labbot_containers }}"
       loop_control:
