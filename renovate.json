@@ -34,5 +34,14 @@
       "matchPackageNames": ["grafana/grafana"],
       "changelogUrl": "https://github.com/grafana/grafana/blob/main/CHANGELOG.md"
     }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/).*?[^/]+\\.ya?ml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: =(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?\\s+(?:[A-Za-z0-9_]+?_)?(?:VERSION|version):\\s*['\"]?(?<currentValue>.+?)['\"]?(\\s|$)"
+      ]
+    }
   ]
 }
