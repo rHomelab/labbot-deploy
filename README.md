@@ -59,6 +59,8 @@ Below is a description of the variables, both required and optional, for this de
 
 * `labbot_app_base_dir` (optional): The parent directory for container configuration paths. Default: `/opt`.
 * `labbot_container_name_prefix` (optional): Prefix for all container names. Default: `labbot_`.
+* `labbot_container_image_tag_suffix` (optional): Suffix for `red-discordbot` container image tag (e.g. `-noaudio`). Default: `''`.
+
 
 ### Bot Config
 
