@@ -14,6 +14,9 @@ labbot_app_base_dir: /opt
 # Prefix for all container names
 labbot_container_name_prefix: labbot_
 
+# Suffix for red-discordbot container image tag
+# e.g. `-noaudio`
+labbot_container_image_tag_suffix: ''
 
 ############ Bot config ##################
 
