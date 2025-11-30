@@ -10,7 +10,7 @@ collections:
   - name: community.crypto
     version: 3.0.5
   - name: community.docker
-    version: 5.0.2
+    version: 5.0.3
   - name: community.general
     version: 12.0.1
   # Not required for base functionality, but I (tigattack) use it in my local host_vars.
