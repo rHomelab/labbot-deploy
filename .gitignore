@@ -1,5 +1,6 @@
 .dependencies
 .ansible
 .venv
+plugins/lookup/
 host_vars/labbot_host.yml
 .envrc
