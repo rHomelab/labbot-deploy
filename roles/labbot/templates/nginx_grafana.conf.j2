@@ -68,7 +68,7 @@ server {
     # Everything under /api and /apis is denied by default.
     # Only endpoints required for dashboard rendering are allow-listed.
 
-    location ~ ^/api/(login/ping|plugins/[^/]+/settings|folders|annotations|ds/query|prometheus/|search|dashboards/uid/|dashboards/home|datasources/uid/|library-elements|live/|frontend/settings|user) {
+    location ~ ^/api/(health|login/ping|plugins/[^/]+/settings|folders|annotations|ds/query|prometheus/|search|dashboards/uid/|dashboards/home|datasources/uid/|library-elements|live/|frontend/settings|user) {
         proxy_pass http://{{ grafana_container.name }}:3000;
     }
 
