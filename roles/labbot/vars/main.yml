@@ -3,6 +3,18 @@
 # renovate: datasource=docker depName=ghcr.io/rhomelab/red-discordbot
 labbot_container_image_version: "3.5.24"
 
+labbot_grafana_app_dir: "{{ labbot_app_base_dir }}/grafana"
+
+labbot_nginx_container_name: "{{ labbot_container_name_prefix }}nginx"
+labbot_nginx_dhparam_path_host: "{{ labbot_certbot_cert_bind | split(':') | first }}/dhparam.pem"
+labbot_nginx_conf_path_host: "{{ labbot_app_base_dir }}/nginx/conf"
+
+labbot_certbot_webroot_path: /var/www/certbot
+labbot_certbot_cert_path: /etc/letsencrypt
+
+labbot_certbot_www_bind: "{{ labbot_app_base_dir }}/nginx/certbot_www:{{ labbot_certbot_webroot_path }}"
+labbot_certbot_cert_bind: "{{ labbot_app_base_dir }}/nginx/certbot_certs:{{ labbot_certbot_cert_path }}"
+
 labbot_containers:
   - name: "{{ labbot_container_name_prefix }}bot"
     image: ghcr.io/rhomelab/red-discordbot:{{ labbot_container_image_version ~ labbot_container_image_tag_suffix }}
@@ -118,19 +130,6 @@ labbot_containers:
       - "{{ labbot_grafana_app_dir }}/labbot-fav32.png:/usr/share/grafana/public/img/apple-touch-icon.png:ro"
       - "{{ labbot_grafana_app_dir }}/labbot-fav32.png:/usr/share/grafana/public/img/fav32.png:ro"
     networks: [name: web]
-
-labbot_grafana_app_dir: "{{ labbot_app_base_dir }}/grafana"
-
-labbot_certbot_webroot_path: /var/www/certbot
-labbot_certbot_cert_path: /etc/letsencrypt
-
-labbot_certbot_www_bind: "{{ labbot_app_base_dir }}/nginx/certbot_www:{{ labbot_certbot_webroot_path }}"
-labbot_certbot_cert_bind: "{{ labbot_app_base_dir }}/nginx/certbot_certs:{{ labbot_certbot_cert_path }}"
-
-labbot_nginx_container_name: "{{ labbot_container_name_prefix }}nginx"
-labbot_nginx_dhparam_path_host: "{{ labbot_certbot_cert_bind | split(':') | first }}/dhparam.pem"
-
-labbot_nginx_conf_path_host: "{{ labbot_app_base_dir }}/nginx/conf"
 
 labbot_certbot_container:
   name: "{{ labbot_container_name_prefix }}certbot"
