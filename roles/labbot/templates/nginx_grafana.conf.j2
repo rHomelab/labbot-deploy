@@ -1,5 +1,10 @@
 {{ ansible_managed | comment }}
 
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
 # Handle ACME challenge, redirect all other traffic to https
 server {
     listen 80;
@@ -50,6 +55,9 @@ server {
     proxy_set_header X-Forwarded-Port  443;
     proxy_set_header X-Real-IP         $remote_addr;
     proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade           $http_upgrade;
+    proxy_set_header Connection        $connection_upgrade;
 
     # Generic settings
     add_header           X-Frame-Options SAMEORIGIN;
