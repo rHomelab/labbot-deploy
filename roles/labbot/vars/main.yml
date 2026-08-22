@@ -101,6 +101,7 @@ labbot_containers:
       GF_ANALYTICS_REPORTING_ENABLED: 'false'
       GF_AUTH_ANONYMOUS_ENABLED: 'true'
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_ANONYMOUS_HIDE_VERSION: 'true'
       GF_DEFAULT_INSTANCE_NAME: LabBot
       GF_LOG_MODE: console
       GF_SECURITY_ADMIN_USER: "{{ labbot_grafana_username }}"
