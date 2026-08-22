@@ -7,7 +7,7 @@
     group: "{{ labbot_grafana_container_user }}"
     mode: '0755'
     state: directory
-  loop: "{{ labbot_containers | selectattr('name', '==', 'grafana') | map(attribute='volumes') | flatten | map('split', ':') | map('first') }}"
+  loop: "{{ labbot_containers | selectattr('name', 'search', 'grafana') | map(attribute='volumes') | flatten | map('split', ':') | map('first') }}"
   when: not item is match('.*\.\w{2,4}$')
 
 - name: Create Prometheus directories
@@ -17,7 +17,7 @@
     group: "{{ labbot_prometheus_container_user }}"
     mode: '0755'
     state: directory
-  loop: "{{ labbot_containers | selectattr('name', '==', 'prometheus') | map(attribute='volumes') | flatten | map('split', ':') | map('first') }}"
+  loop: "{{ labbot_containers | selectattr('name', 'search', 'prometheus') | map(attribute='volumes') | flatten | map('split', ':') | map('first') }}"
   when: not item is match('.*\.\w{2,4}$')
 
 - name: Template Prometheus configs
