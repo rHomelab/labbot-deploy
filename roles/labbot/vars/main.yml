@@ -127,6 +127,7 @@ labbot_certbot_cert_path: /etc/letsencrypt
 labbot_certbot_www_bind: "{{ labbot_app_base_dir }}/nginx/certbot_www:{{ labbot_certbot_webroot_path }}"
 labbot_certbot_cert_bind: "{{ labbot_app_base_dir }}/nginx/certbot_certs:{{ labbot_certbot_cert_path }}"
 
+labbot_nginx_container_name: "{{ labbot_container_name_prefix }}nginx"
 labbot_nginx_dhparam_path_host: "{{ labbot_certbot_cert_bind | split(':') | first }}/dhparam.pem"
 
 labbot_nginx_conf_path_host: "{{ labbot_app_base_dir }}/nginx/conf"

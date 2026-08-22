@@ -36,7 +36,7 @@
 
 - name: Deploy NGINX container
   community.docker.docker_container:
-    name: "{{ labbot_container_name_prefix }}nginx"
+    name: "{{ labbot_nginx_container_name }}"
     image: nginx:1.31-alpine
     ports: [80:80, 443:443]
     volumes:
@@ -44,7 +44,6 @@
       - "{{ labbot_certbot_www_bind }}:ro"
       - "{{ labbot_certbot_cert_bind }}:ro"
     networks: [name: web]
-  register: labbot_nginx_container
   notify: Prune Docker images
 
 - name: Certbot block
@@ -93,4 +92,4 @@
       {%- endfor %}
       {{ labbot_certbot_container.image }}
       {{ labbot_certbot_container.command }}
-      && docker exec {{ labbot_nginx_container.container.Name | replace('/', '') }} nginx -s reload
+      && docker exec {{ labbot_nginx_container_name }} nginx -s reload
