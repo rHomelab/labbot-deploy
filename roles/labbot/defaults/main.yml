@@ -30,8 +30,8 @@ labbot_container_image_tag_suffix: ''
 labbot_grafana_username: labbot_admin
 # labbot_grafana_password: ''
 
-labbot_grafana_container_user: "{{ ansible_user_uid }}"
-labbot_prometheus_container_user: "{{ ansible_user_uid }}"
+labbot_grafana_container_user: "{{ ansible_facts['user_uid'] }}"
+labbot_prometheus_container_user: "{{ ansible_facts['user_uid'] }}"
 
 # List of dictionaries with keys `username`, `password`, and `password_bcrypt`
 # labbot_prometheus_users: []
