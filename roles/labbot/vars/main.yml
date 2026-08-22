@@ -3,6 +3,18 @@
 # renovate: datasource=docker depName=ghcr.io/rhomelab/red-discordbot
 labbot_container_image_version: "3.5.24"
 
+labbot_grafana_app_dir: "{{ labbot_app_base_dir }}/grafana"
+
+labbot_nginx_container_name: "{{ labbot_container_name_prefix }}nginx"
+labbot_nginx_dhparam_path_host: "{{ labbot_certbot_cert_bind | split(':') | first }}/dhparam.pem"
+labbot_nginx_conf_path_host: "{{ labbot_app_base_dir }}/nginx/conf"
+
+labbot_certbot_webroot_path: /var/www/certbot
+labbot_certbot_cert_path: /etc/letsencrypt
+
+labbot_certbot_www_bind: "{{ labbot_app_base_dir }}/nginx/certbot_www:{{ labbot_certbot_webroot_path }}"
+labbot_certbot_cert_bind: "{{ labbot_app_base_dir }}/nginx/certbot_certs:{{ labbot_certbot_cert_path }}"
+
 labbot_containers:
   - name: "{{ labbot_container_name_prefix }}bot"
     image: ghcr.io/rhomelab/red-discordbot:{{ labbot_container_image_version ~ labbot_container_image_tag_suffix }}
@@ -101,6 +113,7 @@ labbot_containers:
       GF_ANALYTICS_REPORTING_ENABLED: 'false'
       GF_AUTH_ANONYMOUS_ENABLED: 'true'
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_ANONYMOUS_HIDE_VERSION: 'true'
       GF_DEFAULT_INSTANCE_NAME: LabBot
       GF_LOG_MODE: console
       GF_SECURITY_ADMIN_USER: "{{ labbot_grafana_username }}"
@@ -109,26 +122,14 @@ labbot_containers:
       GF_SERVER_ENABLE_GZIP: 'true'
     volumes:
       - "{{ labbot_grafana_app_dir }}/data:/var/lib/grafana"
+      - "{{ labbot_grafana_app_dir }}/dashboards:/mnt/dashboards"
+      - "{{ labbot_grafana_app_dir }}/provisioning/alerting:/etc/grafana/provisioning/alerting:ro"
       - "{{ labbot_grafana_app_dir }}/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro"
       - "{{ labbot_grafana_app_dir }}/provisioning/datasources:/etc/grafana/provisioning/datasources:ro"
-      - "{{ labbot_grafana_app_dir }}/provisioning/alerting:/etc/grafana/provisioning/alerting:ro"
-      - "{{ labbot_grafana_app_dir }}/dashboards:/mnt/dashboards"
       - "{{ labbot_grafana_app_dir }}/home_dashboard.json:/usr/share/grafana/public/dashboards/home.json:ro"
-      - "{{ labbot_grafana_app_dir }}/labbot-fav32.png:/usr/share/grafana/public/img/fav32.png:ro"
       - "{{ labbot_grafana_app_dir }}/labbot-fav32.png:/usr/share/grafana/public/img/apple-touch-icon.png:ro"
+      - "{{ labbot_grafana_app_dir }}/labbot-fav32.png:/usr/share/grafana/public/img/fav32.png:ro"
     networks: [name: web]
-
-labbot_grafana_app_dir: "{{ labbot_app_base_dir }}/grafana"
-
-labbot_certbot_webroot_path: /var/www/certbot
-labbot_certbot_cert_path: /etc/letsencrypt
-
-labbot_certbot_www_bind: "{{ labbot_app_base_dir }}/nginx/certbot_www:{{ labbot_certbot_webroot_path }}"
-labbot_certbot_cert_bind: "{{ labbot_app_base_dir }}/nginx/certbot_certs:{{ labbot_certbot_cert_path }}"
-
-labbot_nginx_dhparam_path_host: "{{ labbot_certbot_cert_bind | split(':') | first }}/dhparam.pem"
-
-labbot_nginx_conf_path_host: "{{ labbot_app_base_dir }}/nginx/conf"
 
 labbot_certbot_container:
   name: "{{ labbot_container_name_prefix }}certbot"

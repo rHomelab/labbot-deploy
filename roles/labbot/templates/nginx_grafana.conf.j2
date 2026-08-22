@@ -1,5 +1,10 @@
 {{ ansible_managed | comment }}
 
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
 # Handle ACME challenge, redirect all other traffic to https
 server {
     listen 80;
@@ -50,11 +55,33 @@ server {
     proxy_set_header X-Forwarded-Port  443;
     proxy_set_header X-Real-IP         $remote_addr;
     proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade           $http_upgrade;
+    proxy_set_header Connection        $connection_upgrade;
 
     # Generic settings
     add_header           X-Frame-Options SAMEORIGIN;
     add_header           X-Content-Type-Options nosniff;
     client_max_body_size 50m;
+
+    # Anonymous sessions are restricted to dashboard viewing.
+    # Everything under /api and /apis is denied by default.
+    # Only endpoints required for dashboard rendering are allow-listed.
+
+    location ~ ^/api/(login/ping|plugins/[^/]+/settings|folders|annotations|ds/query|prometheus/|search|dashboards/uid/|dashboards/home|datasources/uid/|library-elements|live/|frontend/settings|user) {
+        proxy_pass http://{{ grafana_container.name }}:3000;
+    }
+
+    location ~ ^/apis/(dashboard|folder|quotas|provisioning|preferences)\.grafana\.app/ {
+        proxy_pass http://{{ grafana_container.name }}:3000;
+    }
+
+    location ~ ^/apis?/ {
+        if ($cookie_grafana_session = "") {
+            return 403;
+        }
+        proxy_pass http://{{ grafana_container.name }}:3000;
+    }
 
     location / {
         proxy_pass http://{{ grafana_container.name }}:3000;
